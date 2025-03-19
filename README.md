@@ -31,7 +31,7 @@ A complete authentication boilerplate for Next.js applications with user managem
 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/nextjs-auth-starter.git
+git clone https://github.com/latham91/nextjs-auth-starter.git
 cd nextjs-auth-starter
 ```
 

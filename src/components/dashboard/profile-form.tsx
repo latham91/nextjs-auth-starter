@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FormError } from "@/components/auth/FormError";
+import { FormError } from "@/components/auth/form-error";
 
 export function ProfileForm() {
   const { data: session, update } = useSession();

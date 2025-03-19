@@ -6,9 +6,11 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
   const isAuthRoute = request.nextUrl.pathname.startsWith("/login") || 
                       request.nextUrl.pathname.startsWith("/signup");
+  const isBlogRoute = request.nextUrl.pathname.startsWith("/blog");
+  const isPublicRoute = request.nextUrl.pathname === "/" || isBlogRoute;
 
   // Redirect to login if not authenticated and trying to access protected route
-  if (!token && !isAuthRoute && request.nextUrl.pathname !== "/") {
+  if (!token && !isAuthRoute && !isPublicRoute) {
     const url = new URL("/login", request.url);
     url.searchParams.set("callbackUrl", request.nextUrl.pathname);
     return NextResponse.redirect(url);

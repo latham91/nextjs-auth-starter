@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, CalendarIcon, Clock, Tag } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
 import { notFound } from "next/navigation";
 import { useEffect, useState, use } from "react";
 import { SyntaxHighlighter } from "@/components/ui/syntax-highlighter";
@@ -232,142 +232,184 @@ export default async function handler(req, res) {
   },
 ];
 
-// Function to parse HTML content and replace code blocks with syntax highlighted ones
-function parseContentWithSyntaxHighlighting(content: string) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(content, 'text/html');
-  
-  // Convert the HTML string to React components
-  return doc.body.innerHTML;
-}
-
 export default function BlogPostPage({ params }: { params: { id: string } | Promise<{ id: string }> }) {
   // Unwrap params using React.use() if it's a promise
   const unwrappedParams = params instanceof Promise ? use(params) : params;
-  const post = SAMPLE_POSTS.find((post) => post.id === unwrappedParams.id);
-  const [mounted, setMounted] = useState(false);
-  
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    setMounted(true);
-    
-    // Apply syntax highlighting after the content is mounted
-    if (mounted) {
-      // Initialize highlight.js
-      import('highlight.js').then(hljs => {
-        hljs.default.highlightAll();
-        // Add language labels after highlighting
-        addLanguageLabels();
-      });
-    }
-  }, [mounted]);
-  
-  if (!post) {
+    // Simulating a data fetch
+    const fetchPost = () => {
+      setIsLoading(true);
+      setTimeout(() => {
+        const foundPost = SAMPLE_POSTS.find((p) => p.id === unwrappedParams.id);
+        if (foundPost) {
+          setPost(foundPost);
+        }
+        setIsLoading(false);
+      }, 500);
+    };
+
+    fetchPost();
+  }, [unwrappedParams.id]);
+
+  if (!post && !isLoading) {
     notFound();
   }
 
+  // Process the content to add syntax highlighting
+  const processContent = (content?: string) => {
+    if (!content) return '';
+    return content;
+  };
+
+  // Apply syntax highlighting when the post content is available
+  useEffect(() => {
+    if (post?.content) {
+      const applyHighlighting = () => {
+        // First initialize highlight.js
+        import('highlight.js').then((hljs) => {
+          hljs.default.highlightAll();
+          
+          // Then add language labels - make sure all pre elements have the data-language attribute
+          const preElements = document.querySelectorAll('pre');
+          preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+            
+            // Extract language from the class name (language-xxx)
+            const classes = Array.from(code.classList);
+            const languageClass = classes.find(cls => cls.startsWith('language-'));
+            
+            if (languageClass) {
+              const language = languageClass.replace('language-', '');
+              // Set the data-language attribute on the pre element
+              pre.setAttribute('data-language', language);
+            }
+          });
+        });
+      };
+
+      // Need to wait for the content to be rendered in the DOM
+      setTimeout(applyHighlighting, 100);
+    }
+  }, [post]);
+
   return (
-    <div className="min-h-screen bg-background pb-16">
-      {/* Header with gradient background */}
-      <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent h-64" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 relative">
-          <div className="flex items-center">
-            <Link href="/blog">
-              <Button variant="ghost" size="sm" className="flex items-center gap-1 mb-6">
-                <ChevronLeft className="h-4 w-4" />
-                Back to Blog
-              </Button>
-            </Link>
-          </div>
-          
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight">{post.title}</h1>
-          
-          <div className="flex flex-wrap gap-3 mt-6">
-            {post.category && (
-              <div className="flex items-center text-sm bg-primary/10 text-primary px-3 py-1 rounded-full">
-                <Tag className="mr-1 h-3 w-3" />
-                {post.category}
-              </div>
-            )}
-            <div className="flex items-center text-sm text-muted-foreground">
-              <CalendarIcon className="mr-1.5 h-4 w-4" />
-              {post.date}
-            </div>
-            {post.readTime && (
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Clock className="mr-1.5 h-4 w-4" />
-                {post.readTime}
-              </div>
-            )}
-          </div>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+        <div className="mb-10">
+          <Link href="/blog" className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to all posts
+          </Link>
         </div>
-      </div>
-      
-      {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-        {/* Article card */}
-        <div className="max-w-4xl mx-auto bg-card rounded-xl shadow-sm overflow-hidden border border-border">
-          <div className="p-8 md:p-10">
+
+        {isLoading ? (
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="h-4 bg-gray-200 rounded w-full mb-3"></div>
+            <div className="h-4 bg-gray-200 rounded w-full mb-3"></div>
+            <div className="h-4 bg-gray-200 rounded w-2/3 mb-8"></div>
+          </div>
+        ) : post ? (
+          <>
             <article>
-              {mounted ? (
-                <div 
-                  className="prose prose-lg dark:prose-invert max-w-none
-                    prose-headings:font-bold prose-headings:text-foreground
-                    prose-p:text-muted-foreground prose-p:leading-relaxed
-                    prose-li:text-muted-foreground
-                    prose-pre:bg-transparent prose-pre:p-0 prose-pre:m-0 prose-pre:overflow-hidden
-                    prose-code:text-primary prose-code:font-medium
-                    prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                    prose-strong:text-foreground"
-                  dangerouslySetInnerHTML={{ __html: post.content || '' }}
-                />
-              ) : (
-                <div className="animate-pulse">
-                  <div className="h-6 bg-primary/10 rounded w-3/4 mb-4"></div>
-                  <div className="h-4 bg-primary/10 rounded w-full mb-2"></div>
-                  <div className="h-4 bg-primary/10 rounded w-11/12 mb-2"></div>
-                  <div className="h-4 bg-primary/10 rounded w-4/5 mb-6"></div>
-                  {/* More loading placeholders */}
+              {/* Custom styles for code blocks language labels */}
+              <style jsx global>{`
+                .prose pre {
+                  position: relative;
+                  margin-top: 2.5rem !important;
+                }
+                
+                .prose pre::before {
+                  content: attr(data-language);
+                  position: absolute;
+                  top: -1.75rem;
+                  left: 0;
+                  padding: 0.25rem 0.75rem;
+                  font-size: 0.75rem;
+                  font-weight: 500;
+                  color: #abb2bf;
+                  background-color: #282c34;
+                  border-top-left-radius: 0.375rem;
+                  border-top-right-radius: 0.375rem;
+                  border: 1px solid #3e4451;
+                  border-bottom: none;
+                  text-transform: uppercase;
+                  letter-spacing: 0.05em;
+                }
+              `}</style>
+              
+              <header className="mb-10">
+                <div className="flex items-center text-sm text-gray-500 space-x-4 mb-4">
+                  <span className="flex items-center">
+                    <Tag className="mr-1.5 h-3.5 w-3.5" />
+                    {post.category}
+                  </span>
+                  <span className="flex items-center">
+                    <Calendar className="mr-1.5 h-3.5 w-3.5" />
+                    {post.date}
+                  </span>
+                  <span className="flex items-center">
+                    <Clock className="mr-1.5 h-3.5 w-3.5" />
+                    {post.readTime}
+                  </span>
                 </div>
-              )}
-            </article>
-          </div>
-        </div>
-        
-        {/* Related posts section */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold mb-8">Continue Reading</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {SAMPLE_POSTS.filter(p => p.id !== post.id).slice(0, 2).map((relatedPost) => (
-              <Link href={`/blog/${relatedPost.id}`} key={relatedPost.id} className="group">
-                <div className="bg-card rounded-xl overflow-hidden border border-border/50 hover:border-primary/20 transition-colors duration-300 h-full flex flex-col">
-                  <div className="p-6 flex flex-col h-full">
-                    {relatedPost.category && (
-                      <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-3 w-fit">
-                        {relatedPost.category}
-                      </div>
-                    )}
-                    <h3 className="text-lg font-bold group-hover:text-primary transition-colors">
-                      {relatedPost.title}
-                    </h3>
-                    <p className="mt-2 text-sm text-muted-foreground flex-grow">
-                      {relatedPost.excerpt}
-                    </p>
-                    <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
-                      <div className="text-sm text-muted-foreground">
-                        {relatedPost.date}
-                      </div>
-                      <div className="text-primary font-medium text-sm flex items-center">
-                        Read more
-                        <ChevronLeft className="ml-1 h-3 w-3 rotate-180" />
-                      </div>
+                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                  {post.title}
+                </h1>
+                <p className="text-gray-600 text-xl">{post.excerpt}</p>
+              </header>
+
+              <div 
+                className={`prose prose-gray max-w-none 
+                  prose-headings:text-gray-900 
+                  prose-p:text-gray-700 
+                  prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+                  prose-pre:bg-[#282c34] prose-pre:shadow-md 
+                  prose-pre:border prose-pre:border-gray-700 
+                  prose-pre:rounded-lg 
+                  prose-pre:my-6 prose-pre:mt-8
+                  prose-code:text-[#abb2bf]
+                  [&_pre_code]:p-4 [&_pre]:p-0`}
+                dangerouslySetInnerHTML={{ __html: processContent(post.content) }}
+              />
+              
+              <div className="mt-16 pt-8 border-t border-gray-100">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                  <div className="mb-4 sm:mb-0">
+                    <h3 className="text-sm font-medium text-gray-900">Share this article</h3>
+                    <div className="flex space-x-2 mt-2">
+                      <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.073 4.073 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.093 4.093 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.615 11.615 0 006.29 1.84" />
+                        </svg>
+                      </button>
+                      <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                      <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path fillRule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.51 0 10-4.48 10-10S17.51 2 12 2zm6.605 4.61a8.502 8.502 0 011.93 5.314c-.281-.054-3.101-.629-5.943-.271-.065-.141-.12-.293-.184-.445a25.416 25.416 0 00-.564-1.236c3.145-1.28 4.577-3.124 4.761-3.362zM12 3.475c2.17 0 4.154.813 5.662 2.148-.152.216-1.443 1.941-4.48 3.08-1.399-2.57-2.95-4.675-3.189-5A8.687 8.687 0 0112 3.475zm-3.633.803a53.896 53.896 0 013.167 4.935c-3.992 1.063-7.517 1.04-7.896 1.04a8.581 8.581 0 014.729-5.975zM3.453 12.01v-.26c.37.01 4.512.065 8.775-1.215.25.477.477.965.694 1.453-.109.033-.228.065-.336.098-4.404 1.42-6.747 5.303-6.942 5.629a8.522 8.522 0 01-2.19-5.705zM12 20.547a8.482 8.482 0 01-5.239-1.8c.152-.315 1.888-3.656 6.703-5.337.022-.01.033-.01.054-.022a35.318 35.318 0 011.823 6.475 8.4 8.4 0 01-3.341.684zm4.761-1.465c-.086-.52-.542-3.015-1.659-6.084 2.679-.423 5.022.271 5.314.369a8.468 8.468 0 01-3.655 5.715z" clipRule="evenodd" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
+                  <Link href="/blog">
+                    <Button variant="outline" className="w-full sm:w-auto">
+                      View all articles
+                    </Button>
+                  </Link>
                 </div>
-              </Link>
-            ))}
-          </div>
-        </div>
+              </div>
+            </article>
+          </>
+        ) : null}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, Clock, ArrowUpRight, ChevronRight } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Tag } from "lucide-react";
 
 interface BlogPost {
   id: string;
@@ -15,7 +15,7 @@ const SAMPLE_POSTS: BlogPost[] = [
   {
     id: "1",
     title: "Getting Started with Next.js",
-    excerpt: "Learn how to build a modern web application with Next.js from scratch.",
+    excerpt: "Learn how to build a modern web application with Next.js from scratch. This guide covers everything from setup to deployment.",
     date: "May 15, 2023",
     readTime: "8 min read",
     category: "Tutorials",
@@ -23,7 +23,7 @@ const SAMPLE_POSTS: BlogPost[] = [
   {
     id: "2",
     title: "Authentication in Next.js Applications",
-    excerpt: "Implement secure authentication in your Next.js app using modern techniques.",
+    excerpt: "Implement secure authentication in your Next.js app using modern techniques. Learn about JWT, session management, and best practices.",
     date: "June 2, 2023",
     readTime: "12 min read",
     category: "Security",
@@ -31,7 +31,7 @@ const SAMPLE_POSTS: BlogPost[] = [
   {
     id: "3",
     title: "Building Responsive UIs with Tailwind CSS",
-    excerpt: "Design beautiful and responsive user interfaces using Tailwind CSS utility classes.",
+    excerpt: "Design beautiful and responsive user interfaces using Tailwind CSS utility classes. Create modern designs with minimal effort.",
     date: "July 10, 2023",
     readTime: "10 min read",
     category: "Design",
@@ -39,147 +39,148 @@ const SAMPLE_POSTS: BlogPost[] = [
   {
     id: "4",
     title: "Working with Databases in Next.js",
-    excerpt: "Connect your Next.js application to databases and perform CRUD operations efficiently.",
+    excerpt: "Connect your Next.js application to databases and perform CRUD operations efficiently. Explore different database options and ORMs.",
     date: "August 22, 2023",
     readTime: "15 min read",
     category: "Databases",
   },
+  {
+    id: "5",
+    title: "Server Components and Server Actions",
+    excerpt: "Understand the power of React Server Components and Server Actions in Next.js applications for improved performance and user experience.",
+    date: "September 5, 2023",
+    readTime: "11 min read",
+    category: "Performance",
+  },
+  {
+    id: "6",
+    title: "Building an E-commerce Site with Next.js",
+    excerpt: "A comprehensive guide to creating a full-featured e-commerce platform using Next.js, Stripe, and modern headless CMS solutions.",
+    date: "October 12, 2023",
+    readTime: "18 min read",
+    category: "E-commerce",
+  },
 ];
+
+// Get all unique categories from posts
+const categories = Array.from(new Set(SAMPLE_POSTS.map(post => post.category)));
 
 export default function BlogPage() {
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <div className="text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.15)_1px,transparent_1px)] bg-[length:20px_20px]"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative py-32 md:py-40">
-          <div className="flex flex-col items-start max-w-3xl">
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-primary">
-              Our Blog
-            </h1>
-            <p className="mt-6 text-xl max-w-2xl text-muted-foreground">
-              Latest insights, tutorials, and updates from our team
-            </p>
-          </div>
+    <div className="min-h-screen bg-white">
+      {/* Header Section */}
+      <div className="border-b border-gray-100">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-24">
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-4">
+            Blog
+          </h1>
+          <p className="text-xl text-gray-500 max-w-2xl">
+            Insights, guides, and updates from our team to help you build better applications.
+          </p>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent"></div>
       </div>
 
-      {/* Content Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
-        {/* Featured Post */}
-        <div className="bg-card shadow-xl rounded-2xl overflow-hidden border border-border/10">
-          <div className="grid md:grid-cols-5 gap-0">
-            <div className="md:col-span-3 p-8 md:p-12 flex flex-col justify-center">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                  {SAMPLE_POSTS[0].category}
-                </div>
-                <div className="h-1 w-1 rounded-full bg-border"></div>
-                <div className="flex items-center text-xs text-muted-foreground">
-                  <CalendarIcon className="mr-1.5 h-3 w-3" />
-                  {SAMPLE_POSTS[0].date}
-                </div>
-              </div>
-              
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold">
-                {SAMPLE_POSTS[0].title}
-              </h2>
-              
-              <p className="mt-4 text-muted-foreground">
-                {SAMPLE_POSTS[0].excerpt}
-              </p>
-              
-              <div className="mt-8 flex items-center">
-                <Link href={`/blog/${SAMPLE_POSTS[0].id}`}>
-                  <Button variant="default" size="lg" className="group">
-                    Read Article
-                    <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                  </Button>
-                </Link>
-                <div className="ml-4 flex items-center text-sm text-muted-foreground">
-                  <Clock className="mr-1.5 h-4 w-4" />
-                  {SAMPLE_POSTS[0].readTime}
-                </div>
-              </div>
-            </div>
-            
-            <div className="md:col-span-2 bg-gradient-to-br from-primary/40 to-primary/5 min-h-[200px] md:min-h-full flex items-center justify-center relative">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:24px_24px]"></div>
-              <div className="relative z-10 flex flex-col items-center justify-center text-center p-8">
-                <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-4">
-                  <div className="w-8 h-8 rounded-full bg-primary"></div>
-                </div>
-                <div className="text-lg font-medium text-white">Featured Post</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Category Pills */}
-        <div className="mt-16 mb-8 flex items-center overflow-x-auto pb-4 scrollbar-hide">
-          <div className="px-4 py-1.5 bg-primary/10 text-primary rounded-full mr-2 whitespace-nowrap font-medium">
-            All Posts
-          </div>
-          {Array.from(new Set(SAMPLE_POSTS.map(post => post.category))).map((category) => (
-            <div key={category} className="px-4 py-1.5 bg-card hover:bg-primary/5 border border-border/50 text-muted-foreground rounded-full mr-2 whitespace-nowrap cursor-pointer transition-colors">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+        {/* Categories */}
+        <div className="flex items-center space-x-2 mb-12 overflow-x-auto pb-2 scrollbar-hide">
+          <button className="px-4 py-1.5 bg-gray-900 text-white rounded-full text-sm font-medium">
+            All
+          </button>
+          {categories.map((category) => (
+            <button 
+              key={category} 
+              className="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-sm font-medium whitespace-nowrap transition-colors"
+            >
               {category}
-            </div>
+            </button>
           ))}
         </div>
 
-        {/* Post Grid with modern cards */}
-        <div className="mb-24">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SAMPLE_POSTS.slice(1).map((post) => (
-              <Link href={`/blog/${post.id}`} key={post.id} className="group">
-                <div className="h-full bg-card hover:bg-card/80 rounded-xl overflow-hidden border border-border/40 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
-                  <div className="p-6 flex flex-col h-full">
-                    <div className="flex items-center space-x-4 mb-4">
-                      <div className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                        {post.category}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {post.readTime}
-                      </div>
+        {/* Featured Post */}
+        <div className="mb-16">
+          <Link href={`/blog/${SAMPLE_POSTS[0].id}`} className="group">
+            <div className="relative overflow-hidden bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition-all">
+              <div className="p-8 sm:p-10">
+                <div className="flex items-center text-sm text-gray-500 space-x-4 mb-4">
+                  <span className="flex items-center">
+                    <Tag className="mr-1.5 h-3.5 w-3.5" />
+                    {SAMPLE_POSTS[0].category}
+                  </span>
+                  <span className="flex items-center">
+                    <Calendar className="mr-1.5 h-3.5 w-3.5" />
+                    {SAMPLE_POSTS[0].date}
+                  </span>
+                  <span className="flex items-center">
+                    <Clock className="mr-1.5 h-3.5 w-3.5" />
+                    {SAMPLE_POSTS[0].readTime}
+                  </span>
+                </div>
+                
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-gray-600 transition-colors">
+                  {SAMPLE_POSTS[0].title}
+                </h2>
+                
+                <p className="mt-4 text-gray-600 leading-relaxed">
+                  {SAMPLE_POSTS[0].excerpt}
+                </p>
+                
+                <div className="mt-6 inline-flex items-center text-gray-900 font-medium group-hover:text-gray-600">
+                  Continue reading 
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        {/* Post Grid */}
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-16">
+          {SAMPLE_POSTS.slice(1).map((post) => (
+            <Link href={`/blog/${post.id}`} key={post.id} className="group">
+              <article className="h-full flex flex-col bg-white rounded-lg border border-gray-100 hover:border-gray-200 overflow-hidden transition-all">
+                <div className="p-6 flex flex-col h-full">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      {post.category}
+                    </span>
+                  </div>
+                  
+                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-gray-600 transition-colors mb-2">
+                    {post.title}
+                  </h3>
+                  
+                  <p className="text-gray-500 text-sm flex-grow mb-4">{post.excerpt}</p>
+                  
+                  <div className="flex items-center justify-between text-xs text-gray-500 pt-3 border-t border-gray-100 mt-auto">
+                    <div className="flex items-center">
+                      <Calendar className="mr-1.5 h-3.5 w-3.5" />
+                      {post.date}
                     </div>
-                    
-                    <h3 className="text-xl font-bold group-hover:text-primary transition-colors line-clamp-2">
-                      {post.title}
-                    </h3>
-                    
-                    <p className="mt-3 text-muted-foreground line-clamp-3">{post.excerpt}</p>
-                    
-                    <div className="mt-6 pt-4 border-t border-border flex justify-between items-center mt-auto">
-                      <div className="flex items-center text-xs text-muted-foreground">
-                        <CalendarIcon className="mr-1.5 h-3.5 w-3.5" />
-                        {post.date}
-                      </div>
-                      <div className="flex items-center text-primary text-sm font-medium group-hover:translate-x-0.5 transition-transform">
-                        Read more
-                        <ChevronRight className="ml-1 h-3.5 w-3.5" />
-                      </div>
+                    <div className="flex items-center">
+                      <Clock className="mr-1.5 h-3.5 w-3.5" />
+                      {post.readTime}
                     </div>
                   </div>
                 </div>
-              </Link>
-            ))}
-          </div>
+              </article>
+            </Link>
+          ))}
         </div>
-        
-        {/* Newsletter Section */}
-        <div className="mb-24 bg-black text-white rounded-2xl overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/40 to-transparent opacity-30"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[length:20px_20px]"></div>
-          <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row items-center">
-            <div className="md:w-2/3 mb-8 md:mb-0 md:pr-8">
-              <h2 className="text-2xl md:text-3xl font-bold">Stay updated with our latest articles</h2>
-              <p className="mt-3 text-gray-400">
-                Subscribe to our newsletter to receive the latest updates, tutorials, and insights directly in your inbox.
-              </p>
-            </div>
-            <div className="md:w-1/3 flex flex-col items-center md:items-end">
-              <Button className="bg-white text-black hover:bg-white/90 md:w-auto w-full">
+
+        {/* Newsletter */}
+        <div className="bg-gray-50 rounded-xl p-8 sm:p-10 border border-gray-100">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">Subscribe to our newsletter</h2>
+            <p className="text-gray-500 mb-6">
+              Get the latest articles and insights delivered to your inbox.
+            </p>
+            <div className="sm:flex sm:items-center sm:justify-center space-y-3 sm:space-y-0 sm:space-x-3">
+              <input
+                type="email"
+                placeholder="Your email address"
+                className="w-full sm:w-auto px-4 py-2.5 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+              />
+              <Button className="w-full sm:w-auto bg-gray-900 hover:bg-gray-800">
                 Subscribe
               </Button>
             </div>

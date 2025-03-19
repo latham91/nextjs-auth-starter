@@ -11,10 +11,10 @@ export default function Home() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/login">
-            <Button size="lg">Sign In</Button>
+            <Button size="md">Sign In</Button>
           </Link>
           <Link href="/signup">
-            <Button variant="outline" size="lg">Create Account</Button>
+            <Button variant="outline" size="md">Create Account</Button>
           </Link>
         </div>
         <div className="mt-12">

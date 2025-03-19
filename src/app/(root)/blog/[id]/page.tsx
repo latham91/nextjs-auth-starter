@@ -270,7 +270,7 @@ export default function BlogPostPage({ params }: { params: { id: string } | Prom
       {/* Header with gradient background */}
       <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent h-64" />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 relative">
           <div className="flex items-center">
             <Link href="/blog">
               <Button variant="ghost" size="sm" className="flex items-center gap-1 mb-6">
@@ -304,9 +304,9 @@ export default function BlogPostPage({ params }: { params: { id: string } | Prom
       </div>
       
       {/* Main content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
         {/* Article card */}
-        <div className="bg-card rounded-xl shadow-sm overflow-hidden border border-border">
+        <div className="max-w-4xl mx-auto bg-card rounded-xl shadow-sm overflow-hidden border border-border">
           <div className="p-8 md:p-10">
             <article>
               {mounted ? (

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ArrowRight, Github } from "lucide-react";
 
 export function CTASection() {
   return (
@@ -16,8 +17,10 @@ export function CTASection() {
           <Link href="/signup">
             <Button
               size="lg"
+              className="group"
             >
               Get Started
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
           <a
@@ -28,7 +31,9 @@ export function CTASection() {
             <Button
               variant="secondary"
               size="lg"
+              className="flex items-center"
             >
+              <Github className="mr-2 h-5 w-5" />
               View on GitHub
             </Button>
           </a>

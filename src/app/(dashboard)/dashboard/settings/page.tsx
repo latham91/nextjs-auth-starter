@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { ProfileForm } from "@/components/dashboard/profile-form";
@@ -14,7 +14,8 @@ import {
   Globe, 
   LogOut, 
   Loader2,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  Trash2
 } from "lucide-react";
 
 export default function SettingsPage() {
@@ -106,7 +107,10 @@ export default function SettingsPage() {
               ))}
               
               <div className="pt-2 mt-2 border-t border-border/60">
-                <button className="w-full flex items-center space-x-3 p-3 rounded-lg text-sm transition-colors text-red-500 hover:bg-red-500/10">
+                <button 
+                  onClick={() => signOut({ callbackUrl: '/login' })}
+                  className="w-full flex items-center space-x-3 p-3 rounded-lg text-sm transition-colors text-red-500 hover:bg-red-500/10"
+                >
                   <LogOut className="h-4 w-4" />
                   <span>Sign Out</span>
                 </button>
@@ -120,6 +124,45 @@ export default function SettingsPage() {
           {activeTab === "profile" && (
             <div id="profile" className="animate-in fade-in duration-200">
               <ProfileForm />
+              
+              <div className="mt-8 bg-card shadow-sm rounded-xl overflow-hidden border border-red-200 p-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="p-2 bg-red-100 rounded-lg">
+                    <Shield className="h-5 w-5 text-red-500" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-red-600">Danger Zone</h2>
+                </div>
+                <p className="text-muted-foreground mb-6">
+                  Actions in this section are permanent and cannot be undone.
+                </p>
+                <button
+                  onClick={async () => {
+                    if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+                      try {
+                        const response = await fetch("/api/user/delete", {
+                          method: "DELETE",
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (response.ok) {
+                          alert(data.message || "Your account has been scheduled for deletion.");
+                          signOut({ callbackUrl: '/login' });
+                        } else {
+                          alert(data.message || "An error occurred. Please try again later.");
+                        }
+                      } catch (error) {
+                        alert("An error occurred. Please try again later.");
+                        console.error("Delete account error:", error);
+                      }
+                    }
+                  }}
+                  className="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span>Delete Account</span>
+                </button>
+              </div>
             </div>
           )}
           

@@ -48,6 +48,12 @@ export function Navbar() {
               >
                 Home
               </Link>
+              <Link 
+                href="/blog" 
+                className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 border-transparent hover:border-gray-300"
+              >
+                Blog
+              </Link>
               {isAuthenticated && (
                 <Link 
                   href="/dashboard" 
@@ -171,6 +177,13 @@ export function Navbar() {
             onClick={() => setMobileMenuOpen(false)}
           >
             Home
+          </Link>
+          <Link
+            href="/blog"
+            className="block pl-3 pr-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Blog
           </Link>
           {isAuthenticated && (
             <Link

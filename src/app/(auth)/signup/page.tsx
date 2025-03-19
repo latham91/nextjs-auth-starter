@@ -36,7 +36,13 @@ export default function SignUpPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/signup", {
+      console.log("Form data being sent:", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      const response = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,6 +57,7 @@ export default function SignUpPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        console.error("Error response:", data);
         throw new Error(data.message || "Something went wrong");
       }
 

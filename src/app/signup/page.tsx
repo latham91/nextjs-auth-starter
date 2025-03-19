@@ -3,15 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { AuthLayout } from "@/components/auth/AuthLayout";
+import { FormError } from "@/components/auth/FormError";
 
-export default function SignupPage() {
+export default function SignUpPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -24,15 +27,25 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/register", {
+      const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
       });
 
       const data = await response.json();
@@ -41,27 +54,27 @@ export default function SignupPage() {
         throw new Error(data.message || "Something went wrong");
       }
 
-      // Navigate to login page after successful signup
-      router.push("/login?success=Account created successfully");
-    } catch (error: any) {
-      setError(error.message || "Something went wrong. Please try again.");
+      router.push("/login?registered=true");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Something went wrong");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-2xl font-bold text-center mb-6">Create an Account</h1>
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-md text-sm">
-            {error}
-          </div>
-        )}
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <AuthLayout
+      title="Create Account"
+      subtitle="Get started with your free account"
+    >
+      {error && <FormError message={error} />}
+      
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-1">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            Name
+          </label>
           <Input 
-            label="Name" 
             type="text" 
             id="name"
             name="name"
@@ -69,9 +82,14 @@ export default function SignupPage() {
             value={formData.name}
             onChange={handleChange}
             required
+            className="px-4 py-3 rounded-lg"
           />
+        </div>
+        <div className="space-y-1">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
           <Input 
-            label="Email" 
             type="email" 
             id="email"
             name="email"
@@ -79,9 +97,14 @@ export default function SignupPage() {
             value={formData.email}
             onChange={handleChange}
             required
+            className="px-4 py-3 rounded-lg"
           />
+        </div>
+        <div className="space-y-1">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            Password
+          </label>
           <Input 
-            label="Password" 
             type="password" 
             id="password"
             name="password"
@@ -89,20 +112,42 @@ export default function SignupPage() {
             value={formData.password}
             onChange={handleChange}
             required
+            className="px-4 py-3 rounded-lg"
           />
-          <Button type="submit" fullWidth isLoading={isLoading}>
-            Sign Up
-          </Button>
-        </form>
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">
-            Already have an account?{" "}
-            <Link href="/login" className="text-black font-medium hover:underline">
-              Sign in
-            </Link>
-          </p>
         </div>
+        <div className="space-y-1">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            Confirm Password
+          </label>
+          <Input 
+            type="password" 
+            id="confirmPassword"
+            name="confirmPassword"
+            placeholder="••••••••"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+            className="px-4 py-3 rounded-lg"
+          />
+        </div>
+        
+        <Button 
+          type="submit" 
+          className="w-full mt-6 py-3 text-base font-medium bg-black hover:bg-gray-900 text-white rounded-lg"
+          disabled={isLoading}
+        >
+          {isLoading ? "Creating account..." : "Create Account"}
+        </Button>
+      </form>
+      
+      <div className="mt-8 pt-6 border-t border-gray-200">
+        <p className="text-sm text-gray-600 text-center">
+          Already have an account?{" "}
+          <Link href="/login" className="text-black font-semibold hover:underline transition-colors">
+            Sign in
+          </Link>
+        </p>
       </div>
-    </div>
+    </AuthLayout>
   );
 } 

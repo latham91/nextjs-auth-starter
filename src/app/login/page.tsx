@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { AuthLayout } from "@/components/auth/AuthLayout";
+import { FormError } from "@/components/auth/FormError";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -47,17 +49,18 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-2xl font-bold text-center mb-6">Sign In</h1>
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-md text-sm">
-            {error}
-          </div>
-        )}
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <AuthLayout
+      title="Sign In"
+      subtitle="Welcome back! Please sign in to continue"
+    >
+      {error && <FormError message={error} />}
+      
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-1">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
           <Input 
-            label="Email" 
             type="email" 
             id="email"
             name="email"
@@ -65,9 +68,14 @@ export default function LoginPage() {
             value={formData.email}
             onChange={handleChange}
             required
+            className="px-4 py-3 rounded-lg"
           />
+        </div>
+        <div className="space-y-1">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            Password
+          </label>
           <Input 
-            label="Password" 
             type="password" 
             id="password"
             name="password"
@@ -75,20 +83,32 @@ export default function LoginPage() {
             value={formData.password}
             onChange={handleChange}
             required
+            className="px-4 py-3 rounded-lg"
           />
-          <Button type="submit" fullWidth isLoading={isLoading}>
-            Sign In
-          </Button>
-        </form>
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">
-            Don't have an account?{" "}
-            <Link href="/signup" className="text-black font-medium hover:underline">
-              Sign up
+          <div className="text-right">
+            <Link href="/forgot-password" className="text-sm text-gray-700 hover:text-black font-medium">
+              Forgot password?
             </Link>
-          </p>
+          </div>
         </div>
+        
+        <Button 
+          type="submit" 
+          className="w-full mt-6 py-3 text-base font-medium bg-black hover:bg-gray-900 text-white rounded-lg"
+          disabled={isLoading}
+        >
+          {isLoading ? "Signing in..." : "Sign In"}
+        </Button>
+      </form>
+      
+      <div className="mt-8 pt-6 border-t border-gray-200">
+        <p className="text-sm text-gray-600 text-center">
+          Don't have an account?{" "}
+          <Link href="/signup" className="text-black font-semibold hover:underline transition-colors">
+            Create an account
+          </Link>
+        </p>
       </div>
-    </div>
+    </AuthLayout>
   );
 } 

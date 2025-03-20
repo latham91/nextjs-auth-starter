@@ -86,6 +86,17 @@ export default function SettingsPage() {
                 <div className="overflow-hidden">
                   <div className="font-medium truncate">{session?.user?.name || "User"}</div>
                   <div className="text-xs text-muted-foreground truncate">{session?.user?.email || ""}</div>
+                  {session?.user?.role && (
+                    <div className="mt-1">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                        session.user.role === 'ADMIN' 
+                          ? 'bg-primary/20 text-primary' 
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {session.user.role}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

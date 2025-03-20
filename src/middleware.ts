@@ -7,6 +7,7 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = request.nextUrl.pathname.startsWith("/login") || 
                       request.nextUrl.pathname.startsWith("/signup");
   const isBlogRoute = request.nextUrl.pathname.startsWith("/blog");
+  const isAdminRoute = request.nextUrl.pathname.startsWith("/dashboard/admin");
   const isPublicRoute = request.nextUrl.pathname === "/" || isBlogRoute;
 
   // Redirect to login if not authenticated and trying to access protected route
@@ -14,6 +15,11 @@ export async function middleware(request: NextRequest) {
     const url = new URL("/login", request.url);
     url.searchParams.set("callbackUrl", request.nextUrl.pathname);
     return NextResponse.redirect(url);
+  }
+
+  // Check for admin-only routes
+  if (isAdminRoute && (!token || token.role !== "ADMIN")) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   // Redirect to dashboard if authenticated and trying to access auth route

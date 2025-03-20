@@ -14,10 +14,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useIsAdmin } from "@/lib/auth";
 
 export function Navbar() {
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated";
+  const isAdmin = useIsAdmin(session);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   // Generate initials from user name
@@ -54,7 +56,7 @@ export function Navbar() {
               >
                 Blog
               </Link>
-              {isAuthenticated && (
+              {isAuthenticated && isAdmin && (
                 <Link 
                   href="/dashboard" 
                   className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 border-transparent hover:border-gray-300"
@@ -132,11 +134,13 @@ export function Navbar() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="cursor-pointer w-full">
-                      Dashboard
-                    </Link>
-                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard" className="cursor-pointer w-full">
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard/settings" className="cursor-pointer w-full">
                       Settings
@@ -185,7 +189,7 @@ export function Navbar() {
           >
             Blog
           </Link>
-          {isAuthenticated && (
+          {isAuthenticated && isAdmin && (
             <Link
               href="/dashboard"
               className="block pl-3 pr-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
@@ -232,13 +236,15 @@ export function Navbar() {
               </div>
             </div>
             <div className="mt-3 space-y-1">
-              <Link
-                href="/dashboard"
-                className="block px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Dashboard
-              </Link>
+              {isAdmin && (
+                <Link
+                  href="/dashboard"
+                  className="block px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+              )}
               <Link
                 href="/dashboard/settings"
                 className="block px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
